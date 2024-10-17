@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفسير نتائج فحص الدم - CBC</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Arial', sans-serif;
+            text-align: right;
+        }
+
+        h1 {
+            color: #34495e;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            text-align: center;
+        }
+
+        .container {
+            margin-top: 50px;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0px 0px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border-radius: 50px;
+            padding: 12px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            box-shadow: 0px 5px 15px rgba(41, 128, 185, 0.4);
+            transform: translateY(-2px);
+        }
+
+        #result {
+            margin-top: 30px;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        #result.visible {
+            opacity: 1;
+        }
+
+        .loading-indicator {
+            display: none;
+            font-size: 1.2rem;
+            color: #3498db;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .loading-indicator.show {
+            display: inline-block;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #3498db;
+            animation: spin 1s ease infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1rem;
+            text-align: center;
+            background-color: #fff;
+        }
+
+        table th, table td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #2980b9;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        table tr:hover {
+            background-color: #ddd;
+        }
+
+        .table-container {
+            margin-top: 40px;
+        }
+
+        .results-header {
+            font-size: 1.5rem;
+            color: #2980b9;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .form-group label {
+                font-size: 1rem;
+            }
+
+            .form-group input, .form-group select, button {
+                font-size: 1rem;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center" id="main-title">مرحبًا بك في منصة تفسير نتائج فحص الدم (CBC)</h1>
+        <div class="language-switch mb-4">
+            <label for="languageSwitcher">اختر اللغة:</label>
+            <select id="languageSwitcher" class="form-control">
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+        <p id="upload-instruction" class="text-center">قم برفع تقرير فحص الدم الخاص بك، وإدخال معلوماتك للحصول على تفسير مبسط لنتائجك.</p>
+        
+        <form id="uploadForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file">قم برفع تقرير فحص الدم (PDF، صورة، أو DOCX):</label>
+                <input type="file" class="form-control" id="file" name="file" accept=".pdf,.png,.jpg,.jpeg,.docx" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="age">أدخل عمرك:</label>
+                <input type="number" class="form-control" id="age" name="age" placeholder="أدخل عمرك" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="gender">اختر جنسك:</label>
+                <select class="form-control" id="gender" name="gender" required>
+                    <option value="male">ذكر</option>
+                    <option value="female">أنثى</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">رفع التقرير والحصول على التفسير</button>
+            <div class="loading-indicator" id="loading">
+                <div class="loading-spinner"></div>
+                <span id="loading-text">جاري معالجة التقرير، الرجاء الانتظار...</span>
+            </div>
+        </form>
+
+        <div id="result" class="mt-5"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        const translations = {
+            ar: {
+                title: "مرحبًا بك في منصة تفسير نتائج فحص الدم (CBC)",
+                choose_language: "اختر اللغة:",
+                upload_prompt: "قم برفع تقرير فحص الدم الخاص بك، وإدخال معلوماتك للحصول على تفسير مبسط لنتائجك.",
+                file_upload_label: "قم برفع تقرير فحص الدم (PDF، صورة، أو DOCX):",
+                age_label: "أدخل عمرك:",
+                age_placeholder: "أدخل عمرك",
+                gender_label: "اختر جنسك:",
+                gender_male: "ذكر",
+                gender_female: "أنثى",
+                submit_button: "رفع التقرير والحصول على التفسير",
+                processing_message: "جاري معالجة التقرير، الرجاء الانتظار..."
+            },
+            en: {
+                title: "Welcome to the Blood Test Interpretation Platform (CBC)",
+                choose_language: "Select preferred interpretation language:",
+                upload_prompt: "Upload your blood test report and enter your details to get a simplified interpretation of your results.",
+                file_upload_label: "Upload your blood test report (PDF, Image, or DOCX):",
+                age_label: "Enter your age:",
+                age_placeholder: "Enter your age",
+                gender_label: "Select your gender:",
+                gender_male: "Male",
+                gender_female: "Female",
+                submit_button: "Upload report and get interpretation",
+                processing_message: "Processing report, please wait..."
+            }
+        };
+
+        function changeLanguage(language) {
+            document.getElementById('main-title').innerText = translations[language].title;
+            document.getElementById('upload-instruction').innerText = translations[language].upload_prompt;
+            document.querySelector('label[for="file"]').innerText = translations[language].file_upload_label;
+            document.querySelector('label[for="age"]').innerText = translations[language].age_label;
+            document.getElementById('age').placeholder = translations[language].age_placeholder;
+            document.querySelector('label[for="gender"]').innerText = translations[language].gender_label;
+            document.querySelector('#gender option[value="male"]').innerText = translations[language].gender_male;
+            document.querySelector('#gender option[value="female"]').innerText = translations[language].gender_female;
+            document.querySelector('button[type="submit"]').innerText = translations[language].submit_button;
+            document.getElementById('loading-text').innerText = translations[language].processing_message;
+        }
+
+        $(document).ready(function() {
+            $('#languageSwitcher').on('change', function() {
+                var selectedLanguage = $(this).val();
+                if (selectedLanguage === 'ar') {
+                    $('html').attr('dir', 'rtl');
+                    $('html').attr('lang', 'ar');
+                    $('body').css('text-align', 'right');
+                    $('h1, p').css('text-align', 'center');
+                } else {
+                    $('html').attr('dir', 'ltr');
+                    $('html').attr('lang', 'en');
+                    $('body').css('text-align', 'left');
+                    $('h1, p').css('text-align', 'center');
+                }
+                changeLanguage(selectedLanguage);
+            });
+
+            $('#uploadForm').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                formData.append('language', $('#languageSwitcher').val());
+                $('#loading').addClass('show');
+                $('#result').removeClass('visible');
+
+                $.ajax({
+                    url: '/api/upload-report',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        $('#loading').removeClass('show');
+
+                        var selectedLanguage = $('#languageSwitcher').val();
+                        let interpretationHeader;
+
+                        if (selectedLanguage === 'ar') {
+                            interpretationHeader = '<h3 class="results-header">نتائج التفسير:</h3>';
+                        } else {
+                            interpretationHeader = '<h3 class="results-header">Interpretation Results:</h3>';
+                        }
+
+                        // تنسيق النتائج بشكل أنيق ومنظم
+                        let formattedResult = interpretationHeader;
+                        formattedResult += '<div class="table-container">';
+                        formattedResult += '<h4 class="section-title">' + (selectedLanguage === 'ar' ? 'الأهمية السريرية:' : 'Clinical Significance:') + '</h4>';
+                        formattedResult += '<ul>';
+                        formattedResult += '<li>' + response.clinicalSignificance.replace(/-/g, '<br>-') + '</li>';
+                        formattedResult += '</ul>';
+                        
+                        formattedResult += '<h4 class="section-title">' + (selectedLanguage === 'ar' ? 'التوصيات:' : 'Recommendations:') + '</h4>';
+                        formattedResult += '<ul>';
+                        formattedResult += '<li>' + response.recommendations.replace(/-/g, '<br>-') + '</li>';
+                        formattedResult += '</ul>';
+
+                        formattedResult += '<h4 class="section-title">' + (selectedLanguage === 'ar' ? 'المراقبة:' : 'Monitoring:') + '</h4>';
+                        formattedResult += '<ul>';
+                        formattedResult += '<li>' + response.monitoring.replace(/-/g, '<br>-') + '</li>';
+                        formattedResult += '</ul>';
+
+                        formattedResult += '<h4 class="section-title">' + (selectedLanguage === 'ar' ? 'التشخيص العام:' : 'General Diagnosis:') + '</h4>';
+                        formattedResult += '<p>' + response.generalDiagnosis + '</p>';
+                        formattedResult += '</div>';
+
+                        $('#result').html(formattedResult);
+                        $('#result').addClass('visible');
+                    },
+                    error: function(xhr, status, error) {
+                        $('#loading').removeClass('show');
+                        $('#result').html('<div class="alert alert-danger">حدث خطأ أثناء معالجة الطلب: ' + xhr.responseText + '</div>');
+                        $('#result').addClass('visible');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
